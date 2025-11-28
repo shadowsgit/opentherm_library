@@ -716,7 +716,7 @@ float OpenTherm::getBoilerTemperature()
 
 float OpenTherm::getReturnTemperature()
 {
-    unsigned long response = sendRequest(buildRequest(OpenThermRequestType::READ, OpenThermMessageID::Tret, 0));
+    unsigned long response = sendRequest(buildRequest(OpenThermRequestType::READ_DATA, OpenThermMessageID::Tret, 0));
     return isValidResponse(response) ? getFloat(response) : 0;
 }
 
@@ -735,17 +735,17 @@ float OpenTherm::getDHWTemperature()
 
 float OpenTherm::getModulation()
 {
-    unsigned long response = sendRequest(buildRequest(OpenThermRequestType::READ, OpenThermMessageID::RelModLevel, 0));
+    unsigned long response = sendRequest(buildRequest(OpenThermRequestType::READ_DATA, OpenThermMessageID::RelModLevel, 0));
     return isValidResponse(response) ? getFloat(response) : 0;
 }
 
 float OpenTherm::getPressure()
 {
-    unsigned long response = sendRequest(buildRequest(OpenThermRequestType::READ, OpenThermMessageID::CHPressure, 0));
+    unsigned long response = sendRequest(buildRequest(OpenThermRequestType::READ_DATA, OpenThermMessageID::CHPressure, 0));
     return isValidResponse(response) ? getFloat(response) : 0;
 }
 
 unsigned char OpenTherm::getFault()
 {
-    return ((sendRequest(buildRequest(OpenThermRequestType::READ, OpenThermMessageID::ASFflags, 0)) >> 8) & 0xff);
+    return ((sendRequest(buildRequest(OpenThermRequestType::READ_DATA, OpenThermMessageID::ASFflags, 0)) >> 8) & 0xff);
 }
