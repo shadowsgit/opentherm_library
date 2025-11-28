@@ -5,12 +5,13 @@ Copyright 2023, Ihor Melnyk
 
 #include "OpenTherm.h"
 
-OpenTherm::OpenTherm(int inPin, int outPin, bool isSlave, bool alwaysReceive) :
+OpenTherm::OpenTherm(int inPin, int outPin, bool isSlave, bool alwaysReceive, bool invertInput) :
     status(OpenThermStatus::NOT_INITIALIZED),
     inPin(inPin),
     outPin(outPin),
     isSlave(isSlave),
     alwaysReceive(alwaysReceive),
+    invertInput(invertInput),
     response(0),
     responseStatus(OpenThermResponseStatus::NONE),
     responseTimestamp(0),
@@ -135,7 +136,7 @@ bool IRAM_ATTR OpenTherm::isReady()
 
 int IRAM_ATTR OpenTherm::readState()
 {
-    return digitalRead(inPin);
+    return (digitalRead(inPin)^invertInput);
 }
 
 void OpenTherm::setActiveState()

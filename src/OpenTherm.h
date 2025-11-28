@@ -33,13 +33,12 @@ enum class OpenThermResponseStatus : byte
     TIMEOUT
 };
 
+// 4.2.2 Message Type - MSG-TYPE
 enum class OpenThermMessageType : byte
 {
     /*  Master to Slave */
     READ_DATA = 0b000,
-    READ = READ_DATA, // for backwared compatibility
     WRITE_DATA = 0b001,
-    WRITE = WRITE_DATA, // for backwared compatibility
     INVALID_DATA = 0b010,
     RESERVED = 0b011,
     /* Slave to Master */
@@ -50,7 +49,7 @@ enum class OpenThermMessageType : byte
 };
 
 typedef OpenThermMessageType OpenThermRequestType; // for backwared compatibility
-
+// 5.4 Data-Id Overview Map
 enum class OpenThermMessageID : byte
 {
     Status                                       = 0, // flag8/flag8  Master and Slave Status flags.
@@ -172,7 +171,7 @@ enum class OpenThermStatus : byte
 class OpenTherm
 {
 public:
-    OpenTherm(int inPin = 4, int outPin = 5, bool isSlave = false, bool alwaysReceive = false);
+    OpenTherm(int inPin = 4, int outPin = 5, bool isSlave = false, bool alwaysReceive = false, bool invertInput = false);
     virtual ~OpenTherm();
     volatile OpenThermStatus status;
     bool getAlwaysReceive();
@@ -187,10 +186,6 @@ public:
     virtual unsigned long sendRequest(unsigned long request);
     virtual bool sendResponse(unsigned long request);
     virtual bool sendRequestAsync(unsigned long request);
-    [[deprecated("Use OpenTherm::sendRequestAsync(unsigned long) instead")]]
-    bool sendRequestAync(unsigned long request) {
-        return sendRequestAsync(request);
-    }
     static unsigned long buildRequest(OpenThermMessageType type, OpenThermMessageID id, unsigned int data);
     static unsigned long buildResponse(OpenThermMessageType type, OpenThermMessageID id, unsigned int data);
     unsigned long getLastResponse();
@@ -242,6 +237,7 @@ protected:
     const int outPin;
     const bool isSlave;
     bool alwaysReceive;
+    const int invertInput;
 
     volatile unsigned long response;
     volatile OpenThermResponseStatus responseStatus;
