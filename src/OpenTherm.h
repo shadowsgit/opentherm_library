@@ -155,6 +155,61 @@ enum class OpenThermMessageID : byte
     SlaveVersion                               = 127, // u8/u8     Slave product version number and type
 };
 
+
+struct ot_uint32_t
+{
+    union 
+    {
+        uint32_t u32;
+        struct {
+            union 
+            {
+                uint16_t u16;
+                int16_t s16;
+                struct
+                {
+                    uint8_t LB;
+                    uint8_t HB;
+                };
+            };
+            uint8_t data_id;
+            uint8_t zero:4;
+            uint8_t msg_type:3;
+            uint8_t parity_bit:1;
+        };
+    };
+    ot_uint32_t()
+    {
+        u32=0;
+    }
+    ot_uint32_t(uint32_t _u32)
+    {
+        u32=_u32;
+    }
+    ot_uint32_t(OpenThermMessageID data_id)
+    {
+        this->get(data_id);
+    }
+    
+    bool parity() const{
+        return __builtin_parity(u32);
+    }
+    bool is_valid(OpenThermMessageID _data_id) const
+    {
+        return parity()&& (msg_type==(uint8_t) OpenThermMessageType::READ_ACK || msg_type==(uint8_t) OpenThermMessageType::WRITE_ACK ) && data_id==(uint8_t) _data_id;
+    }
+    void get(OpenThermMessageID _id, uint16_t value = 0)
+    {
+        u32 = 0; // reset all bits
+        u16 = value;
+        data_id= (uint8_t)_id;
+        parity_bit=parity();
+    }
+    operator uint32_t() const
+    {
+        return u32;
+    }
+};
 enum class OpenThermStatus : byte
 {
     NOT_INITIALIZED,
